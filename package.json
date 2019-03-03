@@ -1,0 +1,24 @@
+{
+  "name": "Event-Booking",
+  "version": "1.0.0",
+  "description": "Event Booking app with Node.js, Express.js, MongoDB, GraphQL",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lamecksilva/Event-Booking.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lamecksilva/Event-Booking/issues"
+  },
+  "homepage": "https://github.com/lamecksilva/Event-Booking#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
