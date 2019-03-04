@@ -14,7 +14,10 @@ app.use(bodyParser.json());
 
 app.use(
   '/graphql',
+  // Creating graphql middleware
   graphqlHttp({
+    // Building the schema
+    // OBS: Types with ! not are nullable
     schema: buildSchema(`
     type Event {
       _id: ID!
@@ -56,8 +59,12 @@ app.use(
       mutation: RootMutation
     }
   `),
+    // Mutations are endpoints for insert, alter data in a DB
+    // Query are querys (only read)
     rootValue: {
+      // in rootValue are the functions declared in Schema
       events: () => {
+        // Return all Events
         return Event.find()
           .then(events => {
             return events.map(event => {
@@ -69,11 +76,13 @@ app.use(
           });
       },
       createEvent: args => {
+        // Creating new event, with the fields in the mutation
         const event = new Event({
           title: args.eventInput.title,
           description: args.eventInput.description,
           price: +args.eventInput.price,
           date: new Date(args.eventInput.date),
+          // Temporary static creator ID 
           creator: '5c7d613d14a40a0025ee1104'
         });
 
