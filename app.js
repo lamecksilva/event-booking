@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
+const mongoose = require('mongoose');
+
+const Event = require('./models/Event');
 
 const app = express();
-
-const events = [];
 
 app.use(bodyParser.json());
 
@@ -46,22 +47,42 @@ app.use(
         return events;
       },
       createEvent: args => {
-        const event = {
-          _id: Math.random().toString(),
+        // const event = {
+        //   _id: Math.random().toString(),
+        //   title: args.eventInput.title,
+        //   description: args.eventInput.description,
+        //   price: +args.eventInput.price,
+        //   date: args.eventInput.date
+        // };
+
+        const event = new Event({
           title: args.eventInput.title,
           description: args.eventInput.description,
           price: +args.eventInput.price,
-          date: args.eventInput.date
-        };
+          date: new Date(args.eventInput.date)
+        });
 
-        events.push(event);
-        return event;
+        return event
+          .save()
+          .then(result => {
+            console.log(result);
+            return { ...result._doc };
+          })
+          .catch(err => {
+            console.log(err);
+            throw err;
+          });
       }
     },
     graphiql: true
   })
 );
 
+mongoose
+  .connect('mongodb://db:27017/event-booking', { useNewUrlParser: true })
+  .then(response => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT);
+app.listen(PORT, () => console.log(`Server Running on port ${PORT}`));
