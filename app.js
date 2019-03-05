@@ -12,6 +12,36 @@ const app = express();
 
 app.use(bodyParser.json());
 
+const events = eventIds => {
+  return Event.find({ _id: { $in: eventIds } })
+    .then(events => {
+      return events.map(event => {
+        return {
+          ...event._doc,
+          _id: event.id,
+          creator: user.bind(this, event.creator)
+        };
+      });
+    })
+    .catch(err => {
+      throw err;
+    });
+};
+
+const user = userId => {
+  return User.findById(userId)
+    .then(user => {
+      return {
+        ...user._doc,
+        _id: user.id,
+        createdEvents: events.bind(this, user._doc.createEvents)
+      };
+    })
+    .catch(err => {
+      throw err;
+    });
+};
+
 app.use(
   '/graphql',
   // Creating graphql middleware
@@ -25,12 +55,14 @@ app.use(
       description: String!
       price: Float!
       date: String!
+      creator: User!
     }
 
     type User {
       _id: ID!
       email: String!
       password: String
+      createdEvents: [Event!]
     }
 
     input UserInput {
@@ -65,15 +97,21 @@ app.use(
       // in rootValue are the functions declared in Schema
       events: () => {
         // Return all Events
-        return Event.find()
-          .then(events => {
-            return events.map(event => {
-              return { ...event._doc };
-            });
-          })
-          .catch(err => {
-            throw err;
-          });
+        return (
+          Event.find()
+            // .populate('creator')
+            .then(events => {
+              return events.map(event => {
+                return {
+                  ...event._doc,
+                  creator: user.bind(this, event._doc.creator)
+                };
+              });
+            })
+            .catch(err => {
+              throw err;
+            })
+        );
       },
       createEvent: args => {
         // Creating new event, with the fields in the mutation
@@ -82,7 +120,7 @@ app.use(
           description: args.eventInput.description,
           price: +args.eventInput.price,
           date: new Date(args.eventInput.date),
-          // Temporary static creator ID 
+          // Temporary static creator ID
           creator: '5c7d613d14a40a0025ee1104'
         });
 
