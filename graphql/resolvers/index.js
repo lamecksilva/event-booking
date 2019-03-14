@@ -62,6 +62,23 @@ module.exports = {
       throw err;
     }
   },
+
+  bookings: async () => {
+    try {
+      const bookings = await Booking.find();
+      return bookings.map(booking => {
+        return {
+          ...booking._doc,
+          _id: booking.id,
+          createdAt: new Date(booking._doc.createdAt).toISOString(),
+          updatedAt: new Date(booking._doc.createdAt).toISOString()
+        };
+      });
+    } catch (err) {
+      throw err;
+    }
+  },
+
   /*
     Creating a new Event
   */
@@ -115,5 +132,13 @@ module.exports = {
     } catch (err) {
       throw err;
     }
+  },
+  bookEvent: async args => {
+    const event = await Event.findOne({ _id: args.eventId})
+
+    const booking = new Booking({
+      user: "5c0fbd06c816781c518e4f3e",
+      event: 
+    })
   }
 };
