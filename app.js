@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
@@ -6,6 +8,7 @@ const mongoose = require('mongoose');
 const graphQlSchema = require('./graphql/schema/index');
 const graphQlResolvers = require('./graphql/resolvers/index');
 
+// Creating an express object app
 const app = express();
 
 app.use(bodyParser.json());
@@ -25,7 +28,7 @@ app.use(
 );
 
 mongoose
-  .connect('mongodb://db:27017/event-booking', { useNewUrlParser: true })
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true })
   .then(response => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
 
